@@ -1,8 +1,17 @@
 import { Router } from "express";
-import { verifyToken } from "../controllers/auth.controller";
+import {
+  checkUser,
+  login,
+  profile,
+  register,
+} from "../controllers/auth.controller";
+import { authenticate } from "../middlewares/middleware";
 
 const router = Router();
 
-router.post("/verify-token", verifyToken);
+router.post("/check-user", checkUser);
+router.post("/register", authenticate ,register);
+router.post("/login", authenticate ,  login);
+router.post("/profile", authenticate , profile);
 
 export default router;
