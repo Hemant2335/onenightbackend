@@ -2,18 +2,6 @@
 import { Request, Response, NextFunction } from 'express';
 import admin from '../firebase';
 
-// Extend Express Request type to include user
-declare global {
-  namespace Express {
-    interface Request {
-      user: {
-        uid: string;
-        email?: string;
-        phone_number?: string;
-      };
-    }
-  }
-}
 
 export const authenticate = async (
   req: Request,
