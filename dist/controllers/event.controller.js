@@ -235,6 +235,20 @@ const bookTicket = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (!userId) {
             return res.status(404).json({ error: 'User not found' });
         }
+        // Check if user already has a ticket for this event (ONE TICKET PER USER PER EVENT)
+        const existingUserTicket = yield prisma_1.default.userTicket.findFirst({
+            where: {
+                user_id: userId,
+                ticket: {
+                    event_id: eventId,
+                },
+            },
+        });
+        if (existingUserTicket) {
+            return res.status(400).json({
+                error: 'You have already booked a ticket for this event. One ticket per user per event.'
+            });
+        }
         // Find an available ticket for this event
         const availableTicket = yield prisma_1.default.ticket.findFirst({
             where: {

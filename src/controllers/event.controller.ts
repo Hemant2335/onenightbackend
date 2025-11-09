@@ -240,6 +240,22 @@ export const bookTicket = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Check if user already has a ticket for this event (ONE TICKET PER USER PER EVENT)
+    const existingUserTicket = await prisma.userTicket.findFirst({
+      where: {
+        user_id: userId,
+        ticket: {
+          event_id: eventId,
+        },
+      },
+    });
+
+    if (existingUserTicket) {
+      return res.status(400).json({ 
+        error: 'You have already booked a ticket for this event. One ticket per user per event.' 
+      });
+    }
+
     // Find an available ticket for this event
     const availableTicket = await prisma.ticket.findFirst({
       where: {
