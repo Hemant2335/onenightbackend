@@ -1,12 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated"
 }
 
 datasource db {
@@ -15,7 +9,61 @@ datasource db {
 }
 
 model User {
-  id           String @id @default(cuid())
+  id           String       @id @default(cuid())
+  firebase_uid String       @unique
   name         String
-  phone_number String @unique
+  phone_number String       @unique
+  is_admin     Boolean      @default(false)
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+  user_tickets UserTicket[]
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  coupons     Coupon[]
+  tickets     Ticket[]
+}
+
+model Ticket {
+  id            String      @id @default(cuid())
+  ticket_number String      @unique
+  event_id      String
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  event         Event       @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  user_ticket   UserTicket?
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  event_id    String
+  title       String
+  description String?
+  code        String?
+  discount    Float?
+  image_url   String?
+  valid_from  DateTime?
+  valid_until DateTime?
+  terms       String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  event       Event    @relation(fields: [event_id], references: [id], onDelete: Cascade)
+}
+
+model UserTicket {
+  id         String   @id @default(cuid())
+  user_id    String
+  ticket_id  String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  ticket     Ticket   @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([ticket_id])
 }

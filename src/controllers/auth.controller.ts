@@ -1,21 +1,26 @@
 import { Request, Response } from "express";
 import admin from "../firebase";
+import prisma from "../lib/prisma";
 
 export const checkUser = async (req: Request, res: Response) => {
   try {
     const { phone } = req.body;
 
-    // Check if user exists in Firebase Auth
-    try {
-      const userRecord = await admin.auth().getUserByPhoneNumber(phone);
+    // Check if user exists in database
+    const user = await prisma.user.findUnique({
+      where: { phone_number: phone },
+    });
 
+    if (user) {
       res.json({
         exists: true,
-        uid: userRecord.uid,
-        name: userRecord.displayName || "",
+        firebase_uid: user.firebase_uid,
+        name: user.name,
       });
-    } catch (error) {
-      res.json({success : false , message : "Internal Server Error"})
+    } else {
+      res.json({
+        exists: false,
+      });
     }
   } catch (error) {
     console.error("Error checking user:", error);
@@ -29,32 +34,44 @@ export const register = async (req: Request, res: Response) => {
 
     // Verify the request is from authenticated user
     if (req.user.uid !== uid) {
-      return res.status(403).json({ error: 'Unauthorized' });
+      return res.status(403).json({ error: "Unauthorized" });
     }
 
-    // Update user profile in Firebase Auth
-    await admin.auth().updateUser(uid, {
-      displayName: name,
-      phoneNumber: phone
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { firebase_uid: uid },
     });
 
-    // Store additional user data in Firestore or your database
-    await admin.firestore().collection('users').doc(uid).set({
-      uid,
-      phone,
-      name,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
+    if (existingUser) {
+      return res.json({
+        success: true,
+        message: "User already exists",
+        user: existingUser,
+      });
+    }
 
-    res.json({ 
-      success: true, 
-      message: 'User registered successfully',
-      user: { uid, phone, name }
+    // Create user in database
+    const user = await prisma.user.create({
+      data: {
+        firebase_uid: uid,
+        phone_number: phone,
+        name: name,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "User registered successfully",
+      user: {
+        id: user.id,
+        firebase_uid: user.firebase_uid,
+        phone: user.phone_number,
+        name: user.name,
+      },
     });
   } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ error: 'Failed to register user' });
+    console.error("Error registering user:", error);
+    res.status(500).json({ error: "Failed to register user" });
   }
 };
 
@@ -62,19 +79,39 @@ export const login = async (req: Request, res: Response) => {
   try {
     const uid = req.user.uid;
 
-    // Update last login timestamp
-    await admin.firestore().collection('users').doc(uid).update({
-      lastLogin: admin.firestore.FieldValue.serverTimestamp()
+    // Get user from database
+    const user = await prisma.user.findUnique({
+      where: { firebase_uid: uid },
+      include: {
+        user_tickets: {
+          include: {
+            ticket: {
+              include: {
+                event: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    res.json({ 
-      success: true, 
-      message: 'Login successful',
-      user: { uid }
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "Login successful",
+      user: {
+        id: user.id,
+        firebase_uid: user.firebase_uid,
+        phone: user.phone_number,
+        name: user.name,
+      },
     });
   } catch (error) {
-    console.error('Error handling login:', error);
-    res.status(500).json({ error: 'Failed to process login' });
+    console.error("Error handling login:", error);
+    res.status(500).json({ error: "Failed to process login" });
   }
 };
 
@@ -82,17 +119,62 @@ export const profile = async (req: Request, res: Response) => {
   try {
     const uid = req.user.uid;
 
-    const userDoc = await admin.firestore().collection('users').doc(uid).get();
-    
-    if (!userDoc.exists) {
-      return res.status(404).json({ error: 'User not found' });
+    const user = await prisma.user.findUnique({
+      where: { firebase_uid: uid },
+      include: {
+        user_tickets: {
+          include: {
+            ticket: {
+              include: {
+                event: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ 
-      user: userDoc.data()
+    res.json({
+      user: {
+        id: user.id,
+        firebase_uid: user.firebase_uid,
+        phone: user.phone_number,
+        name: user.name,
+        is_admin: user.is_admin,
+        user_tickets: user.user_tickets,
+      },
     });
   } catch (error) {
-    console.error('Error fetching profile:', error);
-    res.status(500).json({ error: 'Failed to fetch profile' });
+    console.error("Error fetching profile:", error);
+    res.status(500).json({ error: "Failed to fetch profile" });
+  }
+};
+
+export const checkAdmin = async (req: Request, res: Response) => {
+  try {
+    const uid = req.user.uid;
+
+    const user = await prisma.user.findUnique({
+      where: { firebase_uid: uid },
+      select: {
+        id: true,
+        is_admin: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      is_admin: user.is_admin,
+    });
+  } catch (error) {
+    console.error("Error checking admin status:", error);
+    res.status(500).json({ error: "Failed to check admin status" });
   }
 };

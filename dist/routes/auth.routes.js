@@ -8,4 +8,5 @@ router.post("/check-user", auth_controller_1.checkUser);
 router.post("/register", middleware_1.authenticate, auth_controller_1.register);
 router.post("/login", middleware_1.authenticate, auth_controller_1.login);
 router.post("/profile", middleware_1.authenticate, auth_controller_1.profile);
+router.get("/check-admin", middleware_1.authenticate, auth_controller_1.checkAdmin);
 exports.default = router;
