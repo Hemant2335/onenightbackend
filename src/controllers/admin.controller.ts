@@ -178,14 +178,13 @@ export const autoGenerateTickets = async (req: Request, res: Response) => {
   }
 };
 
-// Create a coupon for an event
+// Create a coupon template for an event (admin defines coupon, but codes are generated when users book)
 export const createCoupon = async (req: Request, res: Response) => {
   try {
     const { eventId } = req.params;
     const {
       title,
       description,
-      code,
       discount,
       image_url,
       valid_from,
@@ -211,7 +210,6 @@ export const createCoupon = async (req: Request, res: Response) => {
         event_id: eventId,
         title,
         description: description || null,
-        code: code || null,
         discount: discount ? parseFloat(discount) : null,
         image_url: image_url || null,
         valid_from: valid_from ? new Date(valid_from) : null,
@@ -222,7 +220,7 @@ export const createCoupon = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      message: "Coupon created successfully",
+      message: "Coupon template created successfully",
       coupon: coupon,
     });
   } catch (error) {
@@ -297,14 +295,13 @@ export const deleteEvent = async (req: Request, res: Response) => {
   }
 };
 
-// Update coupon
+// Update coupon template
 export const updateCoupon = async (req: Request, res: Response) => {
   try {
     const { couponId } = req.params;
     const {
       title,
       description,
-      code,
       discount,
       image_url,
       valid_from,
@@ -317,7 +314,6 @@ export const updateCoupon = async (req: Request, res: Response) => {
       data: {
         title,
         description,
-        code,
         discount: discount ? parseFloat(discount) : null,
         image_url: image_url !== undefined ? image_url : undefined,
         valid_from: valid_from ? new Date(valid_from) : undefined,
@@ -328,7 +324,7 @@ export const updateCoupon = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      message: "Coupon updated successfully",
+      message: "Coupon template updated successfully",
       coupon: coupon,
     });
   } catch (error) {

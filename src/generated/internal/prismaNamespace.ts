@@ -394,7 +394,8 @@ export const ModelName = {
   Event: 'Event',
   Ticket: 'Ticket',
   Coupon: 'Coupon',
-  UserTicket: 'UserTicket'
+  UserTicket: 'UserTicket',
+  UserCoupon: 'UserCoupon'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -410,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "event" | "ticket" | "coupon" | "userTicket"
+    modelProps: "user" | "event" | "ticket" | "coupon" | "userTicket" | "userCoupon"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -784,6 +785,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    UserCoupon: {
+      payload: Prisma.$UserCouponPayload<ExtArgs>
+      fields: Prisma.UserCouponFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserCouponFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserCouponFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload>
+        }
+        findFirst: {
+          args: Prisma.UserCouponFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserCouponFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload>
+        }
+        findMany: {
+          args: Prisma.UserCouponFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload>[]
+        }
+        create: {
+          args: Prisma.UserCouponCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload>
+        }
+        createMany: {
+          args: Prisma.UserCouponCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserCouponCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload>[]
+        }
+        delete: {
+          args: Prisma.UserCouponDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload>
+        }
+        update: {
+          args: Prisma.UserCouponUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserCouponDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserCouponUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserCouponUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserCouponUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserCouponPayload>
+        }
+        aggregate: {
+          args: Prisma.UserCouponAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserCoupon>
+        }
+        groupBy: {
+          args: Prisma.UserCouponGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserCouponGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserCouponCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserCouponCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -863,7 +938,6 @@ export const CouponScalarFieldEnum = {
   event_id: 'event_id',
   title: 'title',
   description: 'description',
-  code: 'code',
   discount: 'discount',
   image_url: 'image_url',
   valid_from: 'valid_from',
@@ -885,6 +959,21 @@ export const UserTicketScalarFieldEnum = {
 } as const
 
 export type UserTicketScalarFieldEnum = (typeof UserTicketScalarFieldEnum)[keyof typeof UserTicketScalarFieldEnum]
+
+
+export const UserCouponScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  ticket_id: 'ticket_id',
+  coupon_template_id: 'coupon_template_id',
+  code: 'code',
+  is_redeemed: 'is_redeemed',
+  redeemed_at: 'redeemed_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type UserCouponScalarFieldEnum = (typeof UserCouponScalarFieldEnum)[keyof typeof UserCouponScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1071,6 +1160,7 @@ export type GlobalOmitConfig = {
   ticket?: Prisma.TicketOmit
   coupon?: Prisma.CouponOmit
   userTicket?: Prisma.UserTicketOmit
+  userCoupon?: Prisma.UserCouponOmit
 }
 
 /* Types for Logging */

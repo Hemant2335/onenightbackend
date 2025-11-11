@@ -199,6 +199,7 @@ export type UserWhereInput = {
   created_at?: Prisma.DateTimeFilter<"User"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"User"> | Date | string
   user_tickets?: Prisma.UserTicketListRelationFilter
+  user_coupons?: Prisma.UserCouponListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -210,6 +211,7 @@ export type UserOrderByWithRelationInput = {
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   user_tickets?: Prisma.UserTicketOrderByRelationAggregateInput
+  user_coupons?: Prisma.UserCouponOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -224,6 +226,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   created_at?: Prisma.DateTimeFilter<"User"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"User"> | Date | string
   user_tickets?: Prisma.UserTicketListRelationFilter
+  user_coupons?: Prisma.UserCouponListRelationFilter
 }, "id" | "firebase_uid" | "phone_number">
 
 export type UserOrderByWithAggregationInput = {
@@ -261,6 +264,7 @@ export type UserCreateInput = {
   created_at?: Date | string
   updated_at?: Date | string
   user_tickets?: Prisma.UserTicketCreateNestedManyWithoutUserInput
+  user_coupons?: Prisma.UserCouponCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -272,6 +276,7 @@ export type UserUncheckedCreateInput = {
   created_at?: Date | string
   updated_at?: Date | string
   user_tickets?: Prisma.UserTicketUncheckedCreateNestedManyWithoutUserInput
+  user_coupons?: Prisma.UserCouponUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -283,6 +288,7 @@ export type UserUpdateInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user_tickets?: Prisma.UserTicketUpdateManyWithoutUserNestedInput
+  user_coupons?: Prisma.UserCouponUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -294,6 +300,7 @@ export type UserUncheckedUpdateInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user_tickets?: Prisma.UserTicketUncheckedUpdateManyWithoutUserNestedInput
+  user_coupons?: Prisma.UserCouponUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -387,6 +394,20 @@ export type UserUpdateOneRequiredWithoutUser_ticketsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUser_ticketsInput, Prisma.UserUpdateWithoutUser_ticketsInput>, Prisma.UserUncheckedUpdateWithoutUser_ticketsInput>
 }
 
+export type UserCreateNestedOneWithoutUser_couponsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUser_couponsInput, Prisma.UserUncheckedCreateWithoutUser_couponsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUser_couponsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutUser_couponsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUser_couponsInput, Prisma.UserUncheckedCreateWithoutUser_couponsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUser_couponsInput
+  upsert?: Prisma.UserUpsertWithoutUser_couponsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUser_couponsInput, Prisma.UserUpdateWithoutUser_couponsInput>, Prisma.UserUncheckedUpdateWithoutUser_couponsInput>
+}
+
 export type UserCreateWithoutUser_ticketsInput = {
   id?: string
   firebase_uid: string
@@ -395,6 +416,7 @@ export type UserCreateWithoutUser_ticketsInput = {
   is_admin?: boolean
   created_at?: Date | string
   updated_at?: Date | string
+  user_coupons?: Prisma.UserCouponCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUser_ticketsInput = {
@@ -405,6 +427,7 @@ export type UserUncheckedCreateWithoutUser_ticketsInput = {
   is_admin?: boolean
   created_at?: Date | string
   updated_at?: Date | string
+  user_coupons?: Prisma.UserCouponUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUser_ticketsInput = {
@@ -431,6 +454,7 @@ export type UserUpdateWithoutUser_ticketsInput = {
   is_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user_coupons?: Prisma.UserCouponUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUser_ticketsInput = {
@@ -441,6 +465,67 @@ export type UserUncheckedUpdateWithoutUser_ticketsInput = {
   is_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user_coupons?: Prisma.UserCouponUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutUser_couponsInput = {
+  id?: string
+  firebase_uid: string
+  name: string
+  phone_number: string
+  is_admin?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  user_tickets?: Prisma.UserTicketCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutUser_couponsInput = {
+  id?: string
+  firebase_uid: string
+  name: string
+  phone_number: string
+  is_admin?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  user_tickets?: Prisma.UserTicketUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutUser_couponsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutUser_couponsInput, Prisma.UserUncheckedCreateWithoutUser_couponsInput>
+}
+
+export type UserUpsertWithoutUser_couponsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUser_couponsInput, Prisma.UserUncheckedUpdateWithoutUser_couponsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUser_couponsInput, Prisma.UserUncheckedCreateWithoutUser_couponsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutUser_couponsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUser_couponsInput, Prisma.UserUncheckedUpdateWithoutUser_couponsInput>
+}
+
+export type UserUpdateWithoutUser_couponsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firebase_uid?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone_number?: Prisma.StringFieldUpdateOperationsInput | string
+  is_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user_tickets?: Prisma.UserTicketUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutUser_couponsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firebase_uid?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone_number?: Prisma.StringFieldUpdateOperationsInput | string
+  is_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user_tickets?: Prisma.UserTicketUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -450,10 +535,12 @@ export type UserUncheckedUpdateWithoutUser_ticketsInput = {
 
 export type UserCountOutputType = {
   user_tickets: number
+  user_coupons: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user_tickets?: boolean | UserCountOutputTypeCountUser_ticketsArgs
+  user_coupons?: boolean | UserCountOutputTypeCountUser_couponsArgs
 }
 
 /**
@@ -473,6 +560,13 @@ export type UserCountOutputTypeCountUser_ticketsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.UserTicketWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUser_couponsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserCouponWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -483,6 +577,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   created_at?: boolean
   updated_at?: boolean
   user_tickets?: boolean | Prisma.User$user_ticketsArgs<ExtArgs>
+  user_coupons?: boolean | Prisma.User$user_couponsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -519,6 +614,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firebase_uid" | "name" | "phone_number" | "is_admin" | "created_at" | "updated_at", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user_tickets?: boolean | Prisma.User$user_ticketsArgs<ExtArgs>
+  user_coupons?: boolean | Prisma.User$user_couponsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -528,6 +624,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     user_tickets: Prisma.$UserTicketPayload<ExtArgs>[]
+    user_coupons: Prisma.$UserCouponPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -932,6 +1029,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user_tickets<T extends Prisma.User$user_ticketsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$user_ticketsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  user_coupons<T extends Prisma.User$user_couponsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$user_couponsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserCouponPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1377,6 +1475,30 @@ export type User$user_ticketsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.UserTicketScalarFieldEnum | Prisma.UserTicketScalarFieldEnum[]
+}
+
+/**
+ * User.user_coupons
+ */
+export type User$user_couponsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserCoupon
+   */
+  select?: Prisma.UserCouponSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserCoupon
+   */
+  omit?: Prisma.UserCouponOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserCouponInclude<ExtArgs> | null
+  where?: Prisma.UserCouponWhereInput
+  orderBy?: Prisma.UserCouponOrderByWithRelationInput | Prisma.UserCouponOrderByWithRelationInput[]
+  cursor?: Prisma.UserCouponWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserCouponScalarFieldEnum | Prisma.UserCouponScalarFieldEnum[]
 }
 
 /**

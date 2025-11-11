@@ -171,11 +171,11 @@ const autoGenerateTickets = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.autoGenerateTickets = autoGenerateTickets;
-// Create a coupon for an event
+// Create a coupon template for an event (admin defines coupon, but codes are generated when users book)
 const createCoupon = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { eventId } = req.params;
-        const { title, description, code, discount, image_url, valid_from, valid_until, terms, } = req.body;
+        const { title, description, discount, image_url, valid_from, valid_until, terms, } = req.body;
         if (!title) {
             return res.status(400).json({ error: "Coupon title is required" });
         }
@@ -191,7 +191,6 @@ const createCoupon = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 event_id: eventId,
                 title,
                 description: description || null,
-                code: code || null,
                 discount: discount ? parseFloat(discount) : null,
                 image_url: image_url || null,
                 valid_from: valid_from ? new Date(valid_from) : null,
@@ -201,7 +200,7 @@ const createCoupon = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
         res.json({
             success: true,
-            message: "Coupon created successfully",
+            message: "Coupon template created successfully",
             coupon: coupon,
         });
     }
@@ -274,17 +273,16 @@ const deleteEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.deleteEvent = deleteEvent;
-// Update coupon
+// Update coupon template
 const updateCoupon = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { couponId } = req.params;
-        const { title, description, code, discount, image_url, valid_from, valid_until, terms, } = req.body;
+        const { title, description, discount, image_url, valid_from, valid_until, terms, } = req.body;
         const coupon = yield prisma_1.default.coupon.update({
             where: { id: couponId },
             data: {
                 title,
                 description,
-                code,
                 discount: discount ? parseFloat(discount) : null,
                 image_url: image_url !== undefined ? image_url : undefined,
                 valid_from: valid_from ? new Date(valid_from) : undefined,
@@ -294,7 +292,7 @@ const updateCoupon = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
         res.json({
             success: true,
-            message: "Coupon updated successfully",
+            message: "Coupon template updated successfully",
             coupon: coupon,
         });
     }

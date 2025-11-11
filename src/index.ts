@@ -3,7 +3,15 @@ import cors from "cors";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://onenightminimalist.vercel.app",
+      "0.0.0.0:3000",
+      "http://localhost:3000",
+    ],
+  })
+);
 app.use(express.json());
 
 import authRoutes from "./routes/auth.routes";

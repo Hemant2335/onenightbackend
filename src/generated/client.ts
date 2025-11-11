@@ -67,3 +67,8 @@ export type Coupon = Prisma.CouponModel
  * 
  */
 export type UserTicket = Prisma.UserTicketModel
+/**
+ * Model UserCoupon
+ * 
+ */
+export type UserCoupon = Prisma.UserCouponModel

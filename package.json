@@ -4,9 +4,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsc &&  node  dist/index.js",
+    "dev": "npm run build && npm run start",
+    "start": "node dist/index.js",
     "seed": "ts-node src/scripts/seed.ts",
-    "db:seed": "ts-node src/scripts/seed.ts"
+    "db:seed": "ts-node src/scripts/seed.ts",
+    "build": "npx prisma generate --schema=./prisma/schema.prisma && tsc -b ."
   },
   "keywords": [],
   "author": "",
@@ -14,11 +16,15 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.19.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",
     "express": "^5.1.0",
     "firebase-admin": "^13.6.0",
+    "googleapis": "^165.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "passkit-generator": "^3.5.5",
     "prisma": "^6.19.0"
   },
   "devDependencies": {
