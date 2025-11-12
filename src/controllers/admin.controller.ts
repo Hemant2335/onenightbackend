@@ -1,6 +1,17 @@
 import { Request, Response } from "express";
 import prisma from "../lib/prisma";
 
+// Helper function to generate unique coupon code
+const generateCouponCode = (): string => {
+  // Generate a random 8-character alphanumeric code
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+};
+
 // Create a new event
 export const createEvent = async (req: Request, res: Response) => {
   try {
@@ -218,10 +229,65 @@ export const createCoupon = async (req: Request, res: Response) => {
       },
     });
 
+    // Get all existing user tickets for this event
+    const existingUserTickets = await prisma.userTicket.findMany({
+      where: {
+        ticket: {
+          event_id: eventId,
+        },
+      },
+      include: {
+        ticket: true,
+      },
+    });
+
+    // Generate UserCoupon for each existing user ticket
+    const userCoupons = [];
+    for (const userTicket of existingUserTickets) {
+      let code = generateCouponCode();
+      let attempts = 0;
+      const maxAttempts = 10;
+
+      // Ensure code is unique
+      while (attempts < maxAttempts) {
+        const existing = await prisma.userCoupon.findUnique({
+          where: { code },
+        });
+        if (!existing) {
+          break;
+        }
+        code = generateCouponCode();
+        attempts++;
+      }
+
+      if (attempts >= maxAttempts) {
+        console.error(
+          "Failed to generate unique coupon code after max attempts"
+        );
+        continue;
+      }
+
+      try {
+        const userCoupon = await prisma.userCoupon.create({
+          data: {
+            user_id: userTicket.user_id,
+            ticket_id: userTicket.ticket_id,
+            coupon_template_id: coupon.id,
+            code: code,
+          },
+        });
+        userCoupons.push(userCoupon);
+      } catch (error: any) {
+        console.error("Error creating user coupon:", error);
+        // Continue with other coupons even if one fails
+      }
+    }
+
     res.json({
       success: true,
       message: "Coupon template created successfully",
       coupon: coupon,
+      coupons_generated: userCoupons.length,
     });
   } catch (error) {
     console.error("Error creating coupon:", error);
