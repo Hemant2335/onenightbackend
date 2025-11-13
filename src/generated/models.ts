@@ -11,6 +11,7 @@
 export type * from './models/User'
 export type * from './models/Event'
 export type * from './models/Ticket'
+export type * from './models/CouponTemplate'
 export type * from './models/Coupon'
 export type * from './models/UserTicket'
 export type * from './models/UserCoupon'

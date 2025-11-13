@@ -393,6 +393,7 @@ export const ModelName = {
   User: 'User',
   Event: 'Event',
   Ticket: 'Ticket',
+  CouponTemplate: 'CouponTemplate',
   Coupon: 'Coupon',
   UserTicket: 'UserTicket',
   UserCoupon: 'UserCoupon'
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "event" | "ticket" | "coupon" | "userTicket" | "userCoupon"
+    modelProps: "user" | "event" | "ticket" | "couponTemplate" | "coupon" | "userTicket" | "userCoupon"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -634,6 +635,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.TicketCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.TicketCountAggregateOutputType> | number
+        }
+      }
+    }
+    CouponTemplate: {
+      payload: Prisma.$CouponTemplatePayload<ExtArgs>
+      fields: Prisma.CouponTemplateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CouponTemplateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CouponTemplateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload>
+        }
+        findFirst: {
+          args: Prisma.CouponTemplateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CouponTemplateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload>
+        }
+        findMany: {
+          args: Prisma.CouponTemplateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload>[]
+        }
+        create: {
+          args: Prisma.CouponTemplateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload>
+        }
+        createMany: {
+          args: Prisma.CouponTemplateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CouponTemplateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload>[]
+        }
+        delete: {
+          args: Prisma.CouponTemplateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload>
+        }
+        update: {
+          args: Prisma.CouponTemplateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload>
+        }
+        deleteMany: {
+          args: Prisma.CouponTemplateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CouponTemplateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CouponTemplateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload>[]
+        }
+        upsert: {
+          args: Prisma.CouponTemplateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CouponTemplatePayload>
+        }
+        aggregate: {
+          args: Prisma.CouponTemplateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCouponTemplate>
+        }
+        groupBy: {
+          args: Prisma.CouponTemplateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CouponTemplateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CouponTemplateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CouponTemplateCountAggregateOutputType> | number
         }
       }
     }
@@ -933,9 +1008,26 @@ export const TicketScalarFieldEnum = {
 export type TicketScalarFieldEnum = (typeof TicketScalarFieldEnum)[keyof typeof TicketScalarFieldEnum]
 
 
+export const CouponTemplateScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  discount: 'discount',
+  image_url: 'image_url',
+  valid_from: 'valid_from',
+  valid_until: 'valid_until',
+  terms: 'terms',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type CouponTemplateScalarFieldEnum = (typeof CouponTemplateScalarFieldEnum)[keyof typeof CouponTemplateScalarFieldEnum]
+
+
 export const CouponScalarFieldEnum = {
   id: 'id',
   event_id: 'event_id',
+  coupon_template_id: 'coupon_template_id',
   title: 'title',
   description: 'description',
   discount: 'discount',
@@ -1158,6 +1250,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   event?: Prisma.EventOmit
   ticket?: Prisma.TicketOmit
+  couponTemplate?: Prisma.CouponTemplateOmit
   coupon?: Prisma.CouponOmit
   userTicket?: Prisma.UserTicketOmit
   userCoupon?: Prisma.UserCouponOmit

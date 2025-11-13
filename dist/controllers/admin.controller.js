@@ -12,8 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCoupon = exports.updateCoupon = exports.deleteEvent = exports.updateEvent = exports.getEventCoupons = exports.createCoupon = exports.autoGenerateTickets = exports.addTicketsToEvent = exports.getAllEvents = exports.createEvent = void 0;
+exports.deleteCouponTemplate = exports.updateCouponTemplate = exports.getAllCouponTemplates = exports.createCouponTemplate = exports.deleteCoupon = exports.updateCoupon = exports.deleteEvent = exports.updateEvent = exports.getEventCoupons = exports.createCoupon = exports.autoGenerateTickets = exports.addTicketsToEvent = exports.getAllEvents = exports.createEvent = void 0;
 const prisma_1 = __importDefault(require("../lib/prisma"));
+// Helper function to generate unique coupon code
+const generateCouponCode = () => {
+    // Generate a random 8-character alphanumeric code
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let code = "";
+    for (let i = 0; i < 8; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+};
 // Create a new event
 const createEvent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -175,10 +185,7 @@ exports.autoGenerateTickets = autoGenerateTickets;
 const createCoupon = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { eventId } = req.params;
-        const { title, description, discount, image_url, valid_from, valid_until, terms, } = req.body;
-        if (!title) {
-            return res.status(400).json({ error: "Coupon title is required" });
-        }
+        const { templateId, title, description, discount, image_url, valid_from, valid_until, terms, } = req.body;
         // Check if event exists
         const event = yield prisma_1.default.event.findUnique({
             where: { id: eventId },
@@ -186,22 +193,82 @@ const createCoupon = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         if (!event) {
             return res.status(404).json({ error: "Event not found" });
         }
+        let couponData = {
+            event_id: eventId,
+        };
+        // If using a template, fetch template data
+        if (templateId) {
+            const template = yield prisma_1.default.couponTemplate.findUnique({
+                where: { id: templateId },
+            });
+            if (!template) {
+                return res.status(404).json({ error: "Coupon template not found" });
+            }
+            couponData = Object.assign(Object.assign({}, couponData), { coupon_template_id: templateId, title: template.title, description: template.description, discount: template.discount, image_url: template.image_url, valid_from: template.valid_from, valid_until: template.valid_until, terms: template.terms });
+        }
+        else {
+            // Manual creation
+            if (!title) {
+                return res.status(400).json({ error: "Coupon title is required" });
+            }
+            couponData = Object.assign(Object.assign({}, couponData), { title, description: description || null, discount: discount ? parseFloat(discount) : null, image_url: image_url || null, valid_from: valid_from ? new Date(valid_from) : null, valid_until: valid_until ? new Date(valid_until) : null, terms: terms || null });
+        }
         const coupon = yield prisma_1.default.coupon.create({
-            data: {
-                event_id: eventId,
-                title,
-                description: description || null,
-                discount: discount ? parseFloat(discount) : null,
-                image_url: image_url || null,
-                valid_from: valid_from ? new Date(valid_from) : null,
-                valid_until: valid_until ? new Date(valid_until) : null,
-                terms: terms || null,
+            data: couponData,
+        });
+        // Get all existing user tickets for this event
+        const existingUserTickets = yield prisma_1.default.userTicket.findMany({
+            where: {
+                ticket: {
+                    event_id: eventId,
+                },
+            },
+            include: {
+                ticket: true,
             },
         });
+        // Generate UserCoupon for each existing user ticket
+        const userCoupons = [];
+        for (const userTicket of existingUserTickets) {
+            let code = generateCouponCode();
+            let attempts = 0;
+            const maxAttempts = 10;
+            // Ensure code is unique
+            while (attempts < maxAttempts) {
+                const existing = yield prisma_1.default.userCoupon.findUnique({
+                    where: { code },
+                });
+                if (!existing) {
+                    break;
+                }
+                code = generateCouponCode();
+                attempts++;
+            }
+            if (attempts >= maxAttempts) {
+                console.error("Failed to generate unique coupon code after max attempts");
+                continue;
+            }
+            try {
+                const userCoupon = yield prisma_1.default.userCoupon.create({
+                    data: {
+                        user_id: userTicket.user_id,
+                        ticket_id: userTicket.ticket_id,
+                        coupon_template_id: coupon.id,
+                        code: code,
+                    },
+                });
+                userCoupons.push(userCoupon);
+            }
+            catch (error) {
+                console.error("Error creating user coupon:", error);
+                // Continue with other coupons even if one fails
+            }
+        }
         res.json({
             success: true,
             message: "Coupon template created successfully",
             coupon: coupon,
+            coupons_generated: userCoupons.length,
         });
     }
     catch (error) {
@@ -320,3 +387,104 @@ const deleteCoupon = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.deleteCoupon = deleteCoupon;
+// Create a coupon template
+const createCouponTemplate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { title, description, discount, image_url, valid_from, valid_until, terms, } = req.body;
+        if (!title) {
+            return res.status(400).json({ error: "Coupon template title is required" });
+        }
+        const couponTemplate = yield prisma_1.default.couponTemplate.create({
+            data: {
+                title,
+                description: description || null,
+                discount: discount ? parseFloat(discount) : null,
+                image_url: image_url || null,
+                valid_from: valid_from ? new Date(valid_from) : null,
+                valid_until: valid_until ? new Date(valid_until) : null,
+                terms: terms || null,
+            },
+        });
+        res.json({
+            success: true,
+            message: "Coupon template created successfully",
+            couponTemplate: couponTemplate,
+        });
+    }
+    catch (error) {
+        console.error("Error creating coupon template:", error);
+        res.status(500).json({ error: "Failed to create coupon template" });
+    }
+});
+exports.createCouponTemplate = createCouponTemplate;
+// Get all coupon templates
+const getAllCouponTemplates = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const couponTemplates = yield prisma_1.default.couponTemplate.findMany({
+            include: {
+                _count: {
+                    select: { coupons: true }
+                }
+            },
+            orderBy: {
+                created_at: "desc",
+            },
+        });
+        res.json({
+            success: true,
+            couponTemplates: couponTemplates,
+        });
+    }
+    catch (error) {
+        console.error("Error fetching coupon templates:", error);
+        res.status(500).json({ error: "Failed to fetch coupon templates" });
+    }
+});
+exports.getAllCouponTemplates = getAllCouponTemplates;
+// Update coupon template
+const updateCouponTemplate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { templateId } = req.params;
+        const { title, description, discount, image_url, valid_from, valid_until, terms, } = req.body;
+        const couponTemplate = yield prisma_1.default.couponTemplate.update({
+            where: { id: templateId },
+            data: {
+                title,
+                description,
+                discount: discount ? parseFloat(discount) : null,
+                image_url: image_url !== undefined ? image_url : undefined,
+                valid_from: valid_from ? new Date(valid_from) : undefined,
+                valid_until: valid_until ? new Date(valid_until) : undefined,
+                terms: terms !== undefined ? terms : undefined,
+            },
+        });
+        res.json({
+            success: true,
+            message: "Coupon template updated successfully",
+            couponTemplate: couponTemplate,
+        });
+    }
+    catch (error) {
+        console.error("Error updating coupon template:", error);
+        res.status(500).json({ error: "Failed to update coupon template" });
+    }
+});
+exports.updateCouponTemplate = updateCouponTemplate;
+// Delete coupon template
+const deleteCouponTemplate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { templateId } = req.params;
+        yield prisma_1.default.couponTemplate.delete({
+            where: { id: templateId },
+        });
+        res.json({
+            success: true,
+            message: "Coupon template deleted successfully",
+        });
+    }
+    catch (error) {
+        console.error("Error deleting coupon template:", error);
+        res.status(500).json({ error: "Failed to delete coupon template" });
+    }
+});
+exports.deleteCouponTemplate = deleteCouponTemplate;

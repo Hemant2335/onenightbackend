@@ -194,6 +194,7 @@ export const createCoupon = async (req: Request, res: Response) => {
   try {
     const { eventId } = req.params;
     const {
+      templateId,
       title,
       description,
       discount,
@@ -202,10 +203,6 @@ export const createCoupon = async (req: Request, res: Response) => {
       valid_until,
       terms,
     } = req.body;
-
-    if (!title) {
-      return res.status(400).json({ error: "Coupon title is required" });
-    }
 
     // Check if event exists
     const event = await prisma.event.findUnique({
@@ -216,9 +213,39 @@ export const createCoupon = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Event not found" });
     }
 
-    const coupon = await prisma.coupon.create({
-      data: {
-        event_id: eventId,
+    let couponData: any = {
+      event_id: eventId,
+    };
+
+    // If using a template, fetch template data
+    if (templateId) {
+      const template = await prisma.couponTemplate.findUnique({
+        where: { id: templateId },
+      });
+
+      if (!template) {
+        return res.status(404).json({ error: "Coupon template not found" });
+      }
+
+      couponData = {
+        ...couponData,
+        coupon_template_id: templateId,
+        title: template.title,
+        description: template.description,
+        discount: template.discount,
+        image_url: template.image_url,
+        valid_from: template.valid_from,
+        valid_until: template.valid_until,
+        terms: template.terms,
+      };
+    } else {
+      // Manual creation
+      if (!title) {
+        return res.status(400).json({ error: "Coupon title is required" });
+      }
+
+      couponData = {
+        ...couponData,
         title,
         description: description || null,
         discount: discount ? parseFloat(discount) : null,
@@ -226,7 +253,11 @@ export const createCoupon = async (req: Request, res: Response) => {
         valid_from: valid_from ? new Date(valid_from) : null,
         valid_until: valid_until ? new Date(valid_until) : null,
         terms: terms || null,
-      },
+      };
+    }
+
+    const coupon = await prisma.coupon.create({
+      data: couponData,
     });
 
     // Get all existing user tickets for this event
@@ -415,5 +446,126 @@ export const deleteCoupon = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error deleting coupon:", error);
     res.status(500).json({ error: "Failed to delete coupon" });
+  }
+};
+
+// Create a coupon template
+export const createCouponTemplate = async (req: Request, res: Response) => {
+  try {
+    const {
+      title,
+      description,
+      discount,
+      image_url,
+      valid_from,
+      valid_until,
+      terms,
+    } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ error: "Coupon template title is required" });
+    }
+
+    const couponTemplate = await prisma.couponTemplate.create({
+      data: {
+        title,
+        description: description || null,
+        discount: discount ? parseFloat(discount) : null,
+        image_url: image_url || null,
+        valid_from: valid_from ? new Date(valid_from) : null,
+        valid_until: valid_until ? new Date(valid_until) : null,
+        terms: terms || null,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Coupon template created successfully",
+      couponTemplate: couponTemplate,
+    });
+  } catch (error) {
+    console.error("Error creating coupon template:", error);
+    res.status(500).json({ error: "Failed to create coupon template" });
+  }
+};
+
+// Get all coupon templates
+export const getAllCouponTemplates = async (req: Request, res: Response) => {
+  try {
+    const couponTemplates = await prisma.couponTemplate.findMany({
+      include: {
+        _count: {
+          select: { coupons: true }
+        }
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
+    res.json({
+      success: true,
+      couponTemplates: couponTemplates,
+    });
+  } catch (error) {
+    console.error("Error fetching coupon templates:", error);
+    res.status(500).json({ error: "Failed to fetch coupon templates" });
+  }
+};
+
+// Update coupon template
+export const updateCouponTemplate = async (req: Request, res: Response) => {
+  try {
+    const { templateId } = req.params;
+    const {
+      title,
+      description,
+      discount,
+      image_url,
+      valid_from,
+      valid_until,
+      terms,
+    } = req.body;
+
+    const couponTemplate = await prisma.couponTemplate.update({
+      where: { id: templateId },
+      data: {
+        title,
+        description,
+        discount: discount ? parseFloat(discount) : null,
+        image_url: image_url !== undefined ? image_url : undefined,
+        valid_from: valid_from ? new Date(valid_from) : undefined,
+        valid_until: valid_until ? new Date(valid_until) : undefined,
+        terms: terms !== undefined ? terms : undefined,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "Coupon template updated successfully",
+      couponTemplate: couponTemplate,
+    });
+  } catch (error) {
+    console.error("Error updating coupon template:", error);
+    res.status(500).json({ error: "Failed to update coupon template" });
+  }
+};
+
+// Delete coupon template
+export const deleteCouponTemplate = async (req: Request, res: Response) => {
+  try {
+    const { templateId } = req.params;
+
+    await prisma.couponTemplate.delete({
+      where: { id: templateId },
+    });
+
+    res.json({
+      success: true,
+      message: "Coupon template deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting coupon template:", error);
+    res.status(500).json({ error: "Failed to delete coupon template" });
   }
 };

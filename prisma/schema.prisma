@@ -40,9 +40,8 @@ model Ticket {
   user_ticket   UserTicket?
 }
 
-model Coupon {
+model CouponTemplate {
   id            String       @id @default(cuid())
-  event_id      String
   title         String
   description   String?
   discount      Float?
@@ -52,8 +51,25 @@ model Coupon {
   terms         String?
   created_at    DateTime     @default(now())
   updated_at    DateTime     @updatedAt
-  event         Event        @relation(fields: [event_id], references: [id], onDelete: Cascade)
-  user_coupons  UserCoupon[]
+  coupons       Coupon[]
+}
+
+model Coupon {
+  id                String         @id @default(cuid())
+  event_id          String
+  coupon_template_id String?
+  title             String
+  description       String?
+  discount          Float?
+  image_url         String?
+  valid_from        DateTime?
+  valid_until       DateTime?
+  terms             String?
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+  event             Event          @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  coupon_template   CouponTemplate? @relation(fields: [coupon_template_id], references: [id], onDelete: SetNull)
+  user_coupons      UserCoupon[]
 }
 
 model UserTicket {

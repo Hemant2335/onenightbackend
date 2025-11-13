@@ -33,6 +33,11 @@ export type Event = Prisma.EventModel
  */
 export type Ticket = Prisma.TicketModel
 /**
+ * Model CouponTemplate
+ * 
+ */
+export type CouponTemplate = Prisma.CouponTemplateModel
+/**
  * Model Coupon
  * 
  */

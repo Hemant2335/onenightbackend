@@ -17,4 +17,9 @@ router.post("/events/:eventId/coupons", middleware_1.requireAdmin, admin_control
 router.get("/events/:eventId/coupons", middleware_1.requireAdmin, admin_controller_1.getEventCoupons);
 router.put("/coupons/:couponId", middleware_1.requireAdmin, admin_controller_1.updateCoupon);
 router.delete("/coupons/:couponId", middleware_1.requireAdmin, admin_controller_1.deleteCoupon);
+// Coupon template routes
+router.post("/coupon-templates", middleware_1.requireAdmin, admin_controller_1.createCouponTemplate);
+router.get("/coupon-templates", middleware_1.requireAdmin, admin_controller_1.getAllCouponTemplates);
+router.put("/coupon-templates/:templateId", middleware_1.requireAdmin, admin_controller_1.updateCouponTemplate);
+router.delete("/coupon-templates/:templateId", middleware_1.requireAdmin, admin_controller_1.deleteCouponTemplate);
 exports.default = router;

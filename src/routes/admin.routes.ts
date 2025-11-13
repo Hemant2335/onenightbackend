@@ -10,6 +10,10 @@ import {
   deleteEvent,
   updateCoupon,
   deleteCoupon,
+  createCouponTemplate,
+  getAllCouponTemplates,
+  updateCouponTemplate,
+  deleteCouponTemplate,
 } from "../controllers/admin.controller";
 import { requireAdmin } from "../middlewares/middleware";
 
@@ -30,5 +34,11 @@ router.post("/events/:eventId/coupons", requireAdmin, createCoupon);
 router.get("/events/:eventId/coupons", requireAdmin, getEventCoupons);
 router.put("/coupons/:couponId", requireAdmin, updateCoupon);
 router.delete("/coupons/:couponId", requireAdmin, deleteCoupon);
+
+// Coupon template routes
+router.post("/coupon-templates", requireAdmin, createCouponTemplate);
+router.get("/coupon-templates", requireAdmin, getAllCouponTemplates);
+router.put("/coupon-templates/:templateId", requireAdmin, updateCouponTemplate);
+router.delete("/coupon-templates/:templateId", requireAdmin, deleteCouponTemplate);
 
 export default router;

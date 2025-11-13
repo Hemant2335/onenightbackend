@@ -52,6 +52,7 @@ export const ModelName = {
   User: 'User',
   Event: 'Event',
   Ticket: 'Ticket',
+  CouponTemplate: 'CouponTemplate',
   Coupon: 'Coupon',
   UserTicket: 'UserTicket',
   UserCoupon: 'UserCoupon'
@@ -108,9 +109,26 @@ export const TicketScalarFieldEnum = {
 export type TicketScalarFieldEnum = (typeof TicketScalarFieldEnum)[keyof typeof TicketScalarFieldEnum]
 
 
+export const CouponTemplateScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  discount: 'discount',
+  image_url: 'image_url',
+  valid_from: 'valid_from',
+  valid_until: 'valid_until',
+  terms: 'terms',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type CouponTemplateScalarFieldEnum = (typeof CouponTemplateScalarFieldEnum)[keyof typeof CouponTemplateScalarFieldEnum]
+
+
 export const CouponScalarFieldEnum = {
   id: 'id',
   event_id: 'event_id',
+  coupon_template_id: 'coupon_template_id',
   title: 'title',
   description: 'description',
   discount: 'discount',
